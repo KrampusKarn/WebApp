@@ -16,11 +16,21 @@ class MainWindow(QMainWindow):
         file_menu_item = self.menuBar().addMenu("&File")
         help_menu_item = self.menuBar().addMenu("&Help")
         edit_menu_item = self.menuBar().addMenu("&Edit")
+        tools_menu_item = self.menuBar().addMenu("&Tools")
 
-        # add student in the file
+        # add student action in the file
         add_student_action = QAction("Add Student", self)
         add_student_action.triggered.connect(self.insert)
         file_menu_item.addAction(add_student_action)
+
+        # add tools action
+        attendance_action = QAction ("Track Attendance", self)
+        attendance_action.triggered.connect(self.track_attendance)
+        tools_menu_item.addAction(attendance_action)
+
+        # add report action
+        report_action = QAction("Report")
+        report_action.triggered.connect(self.report)
 
         # about the db
         about_action = QAction("About", self)
@@ -101,6 +111,13 @@ class MainWindow(QMainWindow):
         dialog = DeleteDialog()
         dialog.exec()
 
+    # waiting for logic
+    def track_attendance(self):
+        pass
+
+    # waiting for logic
+    def report(self):
+        pass
 
 class EditDialog(QDialog):
     def __init__(self, index):
