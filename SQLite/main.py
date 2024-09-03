@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
         file_menu_item.addAction(add_student_action)
 
         # add tools action
-        attendance_action = QAction ("Track Attendance", self)
+        attendance_action = QAction("Track Attendance", self)
         attendance_action.triggered.connect(self.track_attendance)
         tools_menu_item.addAction(attendance_action)
 
@@ -119,6 +119,7 @@ class MainWindow(QMainWindow):
     def report(self):
         pass
 
+
 class EditDialog(QDialog):
     def __init__(self, index):
         super().__init__()
@@ -182,7 +183,11 @@ class EditDialog(QDialog):
 
 
 class DeleteDialog(QDialog):
-    pass
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Delete Student Data")
+        self.setFixedWidth(1024)
+        self.setFixedHeight(768)
 
 
 class InsertDialog(QDialog):
@@ -311,7 +316,7 @@ class SearchDialog(QDialog):
         # Ensure the parent window and table are accessible
         self.clear_table()
         parent_window = self.parent()
-        if isinstance(parent_window, QMainWindow):
+        if isinstance(parent_window, MainWindow):
             table = parent_window.table
             for row_number, row_data in enumerate(rows):
                 table.insertRow(row_number)
@@ -322,7 +327,7 @@ class SearchDialog(QDialog):
 
     def clear_table(self):
         parent_window = self.parent()
-        if isinstance(parent_window, QMainWindow):
+        if isinstance(parent_window, MainWindow):
             table = parent_window.table
             table.setRowCount(0)
         else:
