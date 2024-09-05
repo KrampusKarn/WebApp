@@ -3,7 +3,16 @@ import sqlite3
 
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QTableWidget, QDialog, QVBoxLayout, QLineEdit, QTableWidgetItem,
-                             QComboBox, QPushButton, QToolBar, QStatusBar, QLabel)
+                             QComboBox, QPushButton, QToolBar, QStatusBar, QLabel, QGridLayout, QMessageBox)
+
+
+class DatabaseConnection:
+    def __init__(self, database_file="database.db"):
+        self.database_file = database_file
+
+    def connect(self):
+        connection = sqlite3.connect(self.database_file)
+        return connection
 
 
 class MainWindow(QMainWindow):
@@ -36,6 +45,7 @@ class MainWindow(QMainWindow):
         about_action = QAction("About", self)
         help_menu_item.addAction(about_action)
         about_action.setMenuRole(QAction.MenuRole.NoRole)
+        about_action.triggered.connect(self.about)
 
         # search for particular student
         search_action = QAction("Search", self)
@@ -119,6 +129,21 @@ class MainWindow(QMainWindow):
     def report(self):
         pass
 
+    def about (self):
+        dialog = AboutDialog()
+        dialog.exec()
+
+
+class AboutDialog(QMessageBox):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("About")
+        content = """
+        This is a demo database project, Student Information Management System that I used to learn more about 
+        Python Libraries, OOP and other operations.
+        """
+        self.setText(content)
+
 
 class EditDialog(QDialog):
     def __init__(self, index):
@@ -131,7 +156,12 @@ class EditDialog(QDialog):
         layout = QVBoxLayout()
 
         # Get the student data from the table using the index I defined
+        index = main_window.table.currentRow()
         student_name = main_window.table.item(self.index, 1).text()
+
+        # get id from selected row
+        self.student_id = main_window.table.item(index, 0).text()
+
         self.student_name = QLineEdit(student_name)
         self.student_name.setPlaceholderText("Name")
         layout.addWidget(self.student_name)
@@ -186,8 +216,41 @@ class DeleteDialog(QDialog):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Delete Student Data")
-        self.setFixedWidth(1024)
-        self.setFixedHeight(768)
+
+        layout = QGridLayout()
+        confirmation = QLabel("Are you sure you want to delete?")
+        yes = QPushButton("Yes")
+        no = QPushButton("No")
+
+        layout.addWidget(confirmation, 0, 0, 1, 2)
+        layout.addWidget(yes, 1, 0)
+        layout.addWidget(no, 1, 1)
+        self.setLayout(layout)
+
+        yes.clicked.connect(self.accept_delete)
+        no.clicked.connect(self.reject_delete)
+
+    def accept_delete(self):
+        index = main_window.table.currentRow()
+        student_id = main_window.table.item(index, 0).text()
+
+        connection = sqlite3.connect("database.db")
+        cursor = connection.cursor()
+        cursor.execute("DELETE from students WHERE id = ?", (student_id,))
+        connection.commit()
+        cursor.close()
+        connection.close()
+        main_window.load_data()
+
+        self.close()
+
+        confirmation_widget = QMessageBox()
+        confirmation_widget.setWindowTitle("Success")
+        confirmation_widget.setText("Record was successfully deleted")
+        confirmation_widget.exec()
+
+    def reject_delete(self):
+        pass
 
 
 class InsertDialog(QDialog):
