@@ -123,7 +123,8 @@ class MainWindow(QMainWindow):
 
     # waiting for logic
     def track_attendance(self):
-        pass
+        dialog = Track()
+        dialog.exec()
 
     # waiting for logic
     def report(self):
@@ -132,6 +133,10 @@ class MainWindow(QMainWindow):
     def about (self):
         dialog = AboutDialog()
         dialog.exec()
+
+class Track (QDialog):
+    def __init__(self):
+        super().__init__()
 
 
 class AboutDialog(QMessageBox):
