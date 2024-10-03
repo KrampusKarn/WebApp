@@ -95,7 +95,7 @@ class MainWindow(QMainWindow):
         result = connection.execute("SELECT * FROM students")
         for row_number, row_data in enumerate(result):
             self.table.insertRow(row_number)
-            for column_number, data in enumerate(row_data):
+            for column_number, data in  enumerate(row_data):
                 self.table.setItem(row_number, column_number, QTableWidgetItem(str(data)))
         connection.close()
 
